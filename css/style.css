@@ -1,0 +1,38 @@
+*, ::before, ::after{
+    box-sizing: border-box;
+    padding: 0;
+    margin: 0;
+}
+
+#messages{
+    border: 1px solid black;
+    height: 90vh;
+}
+
+#messages p{
+    padding: 10px;
+}
+
+#messages :nth-child(odd){
+    background-color: #aaa;
+}
+
+form{
+    display: flex;
+}
+
+#name{
+    flex: 1;
+    padding: 10px;
+}
+
+#message{
+    flex: 5;
+}
+
+button{
+    flex: 1;
+    padding: 10px;
+    border: none;
+    background-color: greenyellow;
+}

@@ -1,0 +1,27 @@
+{
+  "name": "chat-socket",
+  "version": "1.0.0",
+  "description": "Réalisation d'un chat avec socket.io",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Kokotto3000/socketChat.git"
+  },
+  "keywords": [
+    "chat",
+    "socket"
+  ],
+  "author": "Kokotto3000",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Kokotto3000/socketChat/issues"
+  },
+  "homepage": "https://github.com/Kokotto3000/socketChat#readme",
+  "dependencies": {
+    "express": "^4.17.1",
+    "socket.io": "^4.2.0"
+  }
+}

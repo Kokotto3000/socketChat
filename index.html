@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat Socket.io</title>
+    <style>
+        *, ::before, ::after{
+            box-sizing: border-box;
+            padding: 0;
+            margin: 0;
+        }
+
+        #messages{
+            border: 1px solid black;
+            height: 90vh;
+        }
+
+        #messages p{
+            padding: 10px;
+        }
+
+        #messages :nth-child(odd){
+            background-color: #aaa;
+        }
+
+        form{
+            display: flex;
+        }
+
+        #name{
+            flex: 1;
+            padding: 10px;
+        }
+
+        #message{
+            flex: 5;
+        }
+
+        button{
+            flex: 1;
+            padding: 10px;
+            border: none;
+            background-color: greenyellow;
+        }
+    </style>
+</head>
+<body>
+    <div id="messages"></div>
+    <form>
+        <input type="text" id="name" placeholder="Entrez votre petit nom" />
+        <input type="text" id="message" placeholder="Entre votre message" />
+        <button>Envoyer</button>
+    </form>
+
+    <!-- socket.io -->
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+        // on se connecte au serveur socket
+        const socket= io();
+
+        window.onload= ()=> {
+            // on écoute le submit
+            document.querySelector("form").addEventListener("submit", e => {
+                e.preventDefault();
+                // console.log(e);
+                const name= document.querySelector("#name");
+                const message= document.querySelector("#message");
+                // console.log(name.value + " " + message.value);
+
+                // on peut envoyer le message
+                socket.emit("chat_message", {
+                    name: name.value,
+                    message: message.value
+                });
+
+                document.querySelector("#message").value= "";
+            });
+
+            //  ici on écoute l'event chat message, celui que le serveur renvoie
+            socket.on("received_message", msg=> {
+                console.log(msg);
+                // et là le message s'affiche bien dans la console et si on ouvre plusieur fenêtre on voit bien qu el'on reçoit le message automatiquement dans l'autre fenêtre
+                document.querySelector("#messages").innerHTML += `<p>${msg.name} dit ${msg.message}</p>`;
+            })
+        }
+    </script>
+</body>
+</html>
