@@ -11,9 +11,9 @@
 <body>
     <aside>
         <ul id="tabs">
-            <li class="active"># Général</li>
-            <li># Entraide</li>
-            <li># Diverses</li>            
+            <li class="active" data-room="general"># Général</li>
+            <li data-room="entraide"># Entraide</li>
+            <li data-room="diverses"># Diverses</li>            
         </ul>
     </aside>
 
@@ -34,35 +34,6 @@
 
     <!-- socket.io -->
     <script src="/socket.io/socket.io.js"></script>
-    <script>
-        // on se connecte au serveur socket
-        const socket= io();
-
-        window.onload= ()=> {
-            // on écoute le submit
-            document.querySelector("form").addEventListener("submit", e => {
-                e.preventDefault();
-                // console.log(e);
-                const name= document.querySelector("#name");
-                const message= document.querySelector("#message");
-                // console.log(name.value + " " + message.value);
-
-                // on peut envoyer le message
-                socket.emit("chat_message", {
-                    name: name.value,
-                    message: message.value
-                });
-
-                document.querySelector("#message").value= "";
-            });
-
-            //  ici on écoute l'event chat message, celui que le serveur renvoie
-            socket.on("received_message", msg=> {
-                console.log(msg);
-                // et là le message s'affiche bien dans la console et si on ouvre plusieur fenêtre on voit bien qu el'on reçoit le message automatiquement dans l'autre fenêtre
-                document.querySelector("#messages").innerHTML += `<p>${msg.name} dit ${msg.message}</p>`;
-            })
-        }
-    </script>
+    <script src="js/app.js"></script>
 </body>
 </html>

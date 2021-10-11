@@ -19,6 +19,7 @@ const io= require("socket.io")(http);
 
 // on charge sequelize
 const Sequelize= require("sequelize");
+const { Socket } = require("socket.io");
 
 // on fabrique le lien de la base de données
 const dbPath= path.resolve(__dirname, "chat.sqlite");
@@ -28,6 +29,8 @@ const sequelize= new Sequelize("database", "username", "password", {
     host: "localhost",
     dialect: "sqlite", //si on veut sql on met mysql ici
     loggin: false,
+
+    //sqlite seulement
     storage: dbPath
 
 });
@@ -56,12 +59,64 @@ io.on("connection", socket=> {
         console.log("un user s'est déconnecté");
     })
 
+    // on écoute les entrées dans les salles, c'est nous qui décidons des noms des messages bien sûr
+    socket.on("enter_room", room=> {
+        // on entre dans la salle demandée
+        socket.join(room);
+        console.log(socket.rooms);
+        // Set(2) { 'FxIkt57eti5de3HcAAAF', 'general' } numero de salle privée, celle du client lui-même, pour envoyer des messages privés par ex, et nom de la salle où l'utilisateur est connecté
+
+        // on envoie tous les message de la base
+        Chat.findAll({
+            attributes: ["id", "name", "message", "room", "createdAt"],
+            where: {
+                room: room
+            }
+        })
+        .then(list=> {
+            socket.emit("init_messages", {
+                messages: JSON.stringify(list)
+            });
+        })
+        .catch(err=> {
+            console.log(err);
+        })
+    });
+
+    // on écoute les sorties
+    socket.on("leave_room", room=> {
+        // on entre dans la salle demandée
+        socket.leave(room);
+        console.log(socket.rooms);
+        // Set(2) { 'FxIkt57eti5de3HcAAAF', 'general' } numero de salle privée, celle du client lui-même, pour envoyer des messages privés par ex, et nom de la salle où l'utilisateur est connecté
+    });
+
     // pour gérer le chat, le message que l'on envoie
     socket.on("chat_message", msg=> {
-        console.log(msg);
+        // console.log(msg);
         // { name: 'Kokotto3000', message: 'MESSAGE' }
-        // à la reception on va le re,voyer vers tous les autres qui écoutent chat message
-        io.emit("received_message", msg);
+        // d'abord on va stocker notre message dans la base de données
+        // create = methode de sequelize
+        const message= Chat.create({
+            name: msg.name,
+            message: msg.message,
+            room: msg.room,
+            createdAt: msg.createdAt
+        })
+        .then(()=>{
+            // le message est stocké, on le relaie à tous les utilisateurs dans le salon correspondant
+            io.in(msg.room).emit("received_message", msg);
+        })
+        .catch(err=> {
+            console.log(err);
+        });
+        // à la reception on va le renvoyer vers tous les autres qui écoutent chat message
+        // io.emit("received_message", msg);
+    });
+
+    // on écoute les msg typing et on relaie !
+    socket.on("typing", msg=> {
+        socket.to(msg.room).emit("userTyping", msg);
     })
 })
 
