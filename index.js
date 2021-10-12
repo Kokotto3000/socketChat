@@ -5,6 +5,8 @@
 const express= require("express");
 const app= express();
 
+const port = process.env.PORT || 5000;
+
 // on charge "path"
 const path= require("path");
 
@@ -121,7 +123,7 @@ io.on("connection", socket=> {
 })
 
 // on va demander au serveur http de répondre sur le port 3000
-http.listen(3000, ()=> {
-    console.log("J'écoute le port 3000.");
+http.listen(port, () => {
+    console.log(`Listening on port ${port}`);
     // si on lance sans créer la route on a cannot GET, donc on crée la route avant
 });
